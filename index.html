@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Math Mastery Academy — TSIA2 Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy:   #0D1B2A;
+    --navy2:  #14263A;
+    --navy3:  #1C3450;
+    --gold:   #C9A84C;
+    --gold2:  #E4C06A;
+    --cream:  #FAF7F0;
+    --white:  #FFFFFF;
+    --text:   rgba(255,255,255,0.88);
+    --muted:  rgba(255,255,255,0.48);
+    --border: rgba(201,168,76,0.22);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.1rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(13,27,42,0.82);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--gold);
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--white); }
+  .nav-cta {
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 9px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .nav-cta:hover { background: var(--gold2); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 9rem 2rem 5rem;
+    overflow: hidden;
+  }
+
+  /* Radial glow behind hero */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(ellipse at center, rgba(201,168,76,0.14) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating decoration circles */
+  .deco {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .deco-1 { width:440px; height:440px; background:var(--gold); top:-100px; right:-120px; }
+  .deco-2 { width:300px; height:300px; background:#3498DB; bottom:-80px; left:-80px; }
+  .deco-3 { width:180px; height:180px; background:var(--gold); bottom:20%; right:8%; }
+
+  .hero-inner { position: relative; z-index: 1; max-width: 860px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 18px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--gold2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1.8rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .badge-dot {
+    width: 7px; height: 7px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.5; transform:scale(0.75); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5.2rem);
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin-bottom: 1.4rem;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+  .hero-title .accent { color: var(--gold); }
+  .hero-title .line2 { display: block; color: rgba(255,255,255,0.55); }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    line-height: 1.65;
+    color: var(--muted);
+    max-width: 580px;
+    margin: 0 auto 2.6rem;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 15px 38px;
+    border-radius: 10px;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    box-shadow: 0 6px 30px rgba(201,168,76,0.35);
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 10px 40px rgba(201,168,76,0.45); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 15px 38px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.18);
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    justify-content: center;
+    margin-top: 3.5rem;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s 0.4s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold);
+    display: block;
+  }
+  .stat-lbl { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.04em; }
+
+  /* ── SCROLLING TICKER ── */
+  .ticker-wrap {
+    overflow: hidden;
+    background: rgba(201,168,76,0.07);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 0;
+    white-space: nowrap;
+  }
+  .ticker {
+    display: inline-flex;
+    gap: 3rem;
+    animation: ticker 28s linear infinite;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .ticker-item {
+    font-size: 0.82rem;
+    color: var(--gold2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .ticker-sep { color: var(--border); margin: 0 0.5rem; }
+
+  /* ── SECTIONS ── */
+  section { position: relative; z-index: 1; padding: 5.5rem 2rem; max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: 1.2rem;
+  }
+  .section-sub {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  /* ── TOPIC GRID ── */
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+  .topic-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.5rem 1.3rem;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .topic-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--color, var(--gold));
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .topic-card:hover { background: rgba(255,255,255,0.07); transform: translateY(-3px); border-color: rgba(255,255,255,0.15); }
+  .topic-card:hover::before { opacity: 1; }
+  .topic-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+  .topic-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+  }
+  .topic-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .topic-tag {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.06);
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .topic-star .topic-tag { background: rgba(201,168,76,0.15); color: var(--gold2); }
+
+  /* ── FEATURES ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .feature-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.2s;
+  }
+  .feature-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(201,168,76,0.25); }
+  .feature-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: rgba(201,168,76,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+  .feature-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .feature-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 0 auto;
+  }
+
+  /* ── LEVELS SHOWCASE ── */
+  .levels-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .level-chip {
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .level-chip:hover { background: rgba(201,168,76,0.12); border-color: var(--gold); color: var(--gold); }
+  .level-chip.gold { background: rgba(201,168,76,0.15); border-color: var(--gold); color: var(--gold); }
+
+  /* ── CTA BAND ── */
+  .cta-band {
+    margin: 2rem;
+    background: linear-gradient(135deg, var(--navy2) 0%, var(--navy3) 100%);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 4.5rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-band::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-band h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .cta-band p {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 460px;
+    margin: 0 auto 2.2rem;
+    position: relative;
+    line-height: 1.65;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    color: var(--gold);
+    font-size: 1rem;
+  }
+  .footer-copy { font-size: 0.8rem; color: var(--muted); }
+
+  @media(max-width:600px){
+    nav { padding: 1rem 1.2rem; }
+    .hero { padding: 7rem 1.2rem 4rem; }
+    section { padding: 3.5rem 1.2rem; }
+    .hero-stats { gap: 1.5rem; }
+    .cta-band { margin: 1rem; padding: 3rem 1.5rem; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Math<span>Mastery</span> Academy</div>
+  <a class="nav-cta" href="math_mastery_app.html">Launch App →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="deco deco-1"></div>
+  <div class="deco deco-2"></div>
+  <div class="deco deco-3"></div>
+  <div class="hero-inner">
+    <div class="badge"><span class="badge-dot"></span>TSIA2 Math Preparation</div>
+    <h1 class="hero-title">
+      Master the Math.<br>
+      <span class="accent">Ace the TSIA2.</span>
+      <span class="line2">Earn Your Royal Title.</span>
+    </h1>
+    <p class="hero-sub">
+      Adaptive practice across 10 algebra and geometry topics. Every problem adjusts to your level.
+      Visual hints, step-by-step guidance, and a teacher progress report — all in one place.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="math_mastery_app.html">Start Practicing Free →</a>
+      <a class="btn-secondary" href="#topics">See All Topics</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">10</span><span class="stat-lbl">Topic Modules</span></div>
+      <div class="stat"><span class="stat-num">300+</span><span class="stat-lbl">Practice Problems</span></div>
+      <div class="stat"><span class="stat-num">10</span><span class="stat-lbl">Skill Levels</span></div>
+      <div class="stat"><span class="stat-num">∞</span><span class="stat-lbl">Problem Variations</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="ticker-item">Ratio &amp; Proportion <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Area &amp; Perimeter <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">One-Variable Equations <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Slope &amp; Linear Functions <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Statistics &amp; Probability <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Functions &amp; Factoring <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Graph Transformations <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Rational Expressions <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Distance Formula ★ <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Midpoint Formula ★ <span class="ticker-sep">✦</span></span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item">Ratio &amp; Proportion <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Area &amp; Perimeter <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">One-Variable Equations <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Slope &amp; Linear Functions <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Statistics &amp; Probability <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Functions &amp; Factoring <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Graph Transformations <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Rational Expressions <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Distance Formula ★ <span class="ticker-sep">✦</span></span>
+    <span class="ticker-item">Midpoint Formula ★ <span class="ticker-sep">✦</span></span>
+  </div>
+</div>
+
+<!-- TOPICS -->
+<section id="topics">
+  <div class="section-label">Curriculum</div>
+  <h2 class="section-title">Every Topic You Need<br>for the TSIA2</h2>
+  <p class="section-sub">Ten modules covering the full algebra and geometry scope of the TSIA2 Math test — from basic proportions to coordinate geometry.</p>
+  <div class="topic-grid">
+    <div class="topic-card" style="--color:#3498DB">
+      <div class="topic-icon">📐</div>
+      <div class="topic-name">Ratio &amp; Proportion</div>
+      <div class="topic-desc">Scale, rates, percent change, similar triangles, direct variation</div>
+      <span class="topic-tag">Part 1</span>
+    </div>
+    <div class="topic-card" style="--color:#1E8449">
+      <div class="topic-icon">📏</div>
+      <div class="topic-name">Area &amp; Perimeter</div>
+      <div class="topic-desc">Rectangles, circles, shaded regions, composite and algebraic shapes</div>
+      <span class="topic-tag">Part 2</span>
+    </div>
+    <div class="topic-card" style="--color:#C0392B">
+      <div class="topic-icon">✏️</div>
+      <div class="topic-name">One-Variable Equations</div>
+      <div class="topic-desc">Linear equations, multi-step solving, word problems</div>
+      <span class="topic-tag">Part 3</span>
+    </div>
+    <div class="topic-card" style="--color:#6C3483">
+      <div class="topic-icon">📈</div>
+      <div class="topic-name">Slope &amp; Linear Functions</div>
+      <div class="topic-desc">Slope formula, y=mx+b, equations of lines, parallel &amp; perpendicular</div>
+      <span class="topic-tag">Part 4</span>
+    </div>
+    <div class="topic-card" style="--color:#D35400">
+      <div class="topic-icon">🎲</div>
+      <div class="topic-name">Statistics &amp; Probability</div>
+      <div class="topic-desc">Mean, median, mode, range, probability, percentage problems</div>
+      <span class="topic-tag">Part 5</span>
+    </div>
+    <div class="topic-card" style="--color:#2C3E50">
+      <div class="topic-icon">🔢</div>
+      <div class="topic-name">Functions &amp; Factoring</div>
+      <div class="topic-desc">Trinomials, GCF, difference of squares, roots and zeros — with box method</div>
+      <span class="topic-tag">Part 6</span>
+    </div>
+    <div class="topic-card" style="--color:#0E6655">
+      <div class="topic-icon">🔄</div>
+      <div class="topic-name">Graph Transformations</div>
+      <div class="topic-desc">Parabola, absolute value, and square root shifts and reflections</div>
+      <span class="topic-tag">Part 7</span>
+    </div>
+    <div class="topic-card" style="--color:#7D6608">
+      <div class="topic-icon">🔣</div>
+      <div class="topic-name">Rational Expressions</div>
+      <div class="topic-desc">Exponent rules, multi-variable exponents, simplifying fractions</div>
+      <span class="topic-tag">Part 8</span>
+    </div>
+    <div class="topic-card topic-star" style="--color:#C9A84C">
+      <div class="topic-icon">📍</div>
+      <div class="topic-name">Distance Formula</div>
+      <div class="topic-desc">Right-triangle method, coordinate geometry, special cases</div>
+      <span class="topic-tag">★ Featured</span>
+    </div>
+    <div class="topic-card topic-star" style="--color:#C9A84C">
+      <div class="topic-icon">⊕</div>
+      <div class="topic-name">Midpoint Formula</div>
+      <div class="topic-desc">Find midpoints and missing endpoints using M = ((x₁+x₂)/2, (y₁+y₂)/2)</div>
+      <span class="topic-tag">★ Featured</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-label">How It Works</div>
+  <h2 class="section-title">Built to Help You<br>Actually Learn</h2>
+  <p class="section-sub">Not just a question bank — a complete adaptive learning system designed around how students actually improve.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <div class="feature-title">Adaptive Difficulty</div>
+      <div class="feature-desc">10 levels from Novice to Royal Scholar. Problems automatically get harder as your accuracy improves, keeping you in the zone of growth.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <div class="feature-title">Box Method Hints</div>
+      <div class="feature-desc">Factoring problems reveal a fully worked AC-method box diagram when you ask for hints — showing every step visually, not just the answer.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Visual Math</div>
+      <div class="feature-desc">Coordinate grids for distance and midpoint, slope diagrams, shaded region shapes, bar charts, and transformation graphs — answers hidden until you choose.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💡</div>
+      <div class="feature-title">Step-by-Step Hints</div>
+      <div class="feature-desc">Three guided hint steps for every problem that walk you through the process without giving away the answer — learn how, not just what.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧮</div>
+      <div class="feature-title">Built-in Calculator</div>
+      <div class="feature-desc">A floating calculator (add, subtract, multiply, divide, √) is always available in the corner — just like the one allowed on the real TSIA2.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📧</div>
+      <div class="feature-title">Teacher Reports</div>
+      <div class="feature-desc">Automatic weekly progress reports emailed to your teacher. Includes accuracy %, topic breakdown, level achieved, and problems to review.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <div class="feature-title">Royal Title System</div>
+      <div class="feature-desc">Earn scholar titles as you reach mastery on each topic — from Novice to Royal Scholar. The 80% mastery rule triggers a level-up celebration.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎓</div>
+      <div class="feature-title">Khan Academy Links</div>
+      <div class="feature-desc">Every topic links to curated Khan Academy videos so you can watch an explanation before you practice.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider" style="max-width:1100px;margin:0 auto;"></div>
+
+<!-- LEVELS -->
+<section id="levels">
+  <div class="section-label">Progression</div>
+  <h2 class="section-title">Climb the Scholar Ranks</h2>
+  <p class="section-sub">Every correct answer builds your score. Hit the thresholds below to level up and unlock harder problems.</p>
+  <div class="levels-row">
+    <div class="level-chip">① Novice</div>
+    <div class="level-chip">② Apprentice</div>
+    <div class="level-chip">③ Scholar</div>
+    <div class="level-chip">④ Adept</div>
+    <div class="level-chip">⑤ Journeyman</div>
+    <div class="level-chip">⑥ Expert</div>
+    <div class="level-chip">⑦ Master</div>
+    <div class="level-chip">⑧ Champion</div>
+    <div class="level-chip">⑨ Grand Master</div>
+    <div class="level-chip gold">⑩ Royal Scholar ★</div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  <h2>Ready to Ace the TSIA2?</h2>
+  <p>Sign in with your Student ID and enrollment code from your teacher. Your progress is saved automatically.</p>
+  <a class="btn-primary" href="math_mastery_app.html">Begin My Journey →</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">MathMastery Academy</div>
+  <div class="footer-copy">TSIA2 Math Preparation · Adaptive Practice · All 10 Topics</div>
+</footer>
+
+</body>
+</html>
