@@ -2333,20 +2333,28 @@ function maybeAutoSave() {
 }
 
 // ═══════════════════════════════════════════
-// RESTORE SESSION ON PAGE LOAD
+// AUTO START — skip login, go straight to practice
 // ═══════════════════════════════════════════
 window.addEventListener('load', () => {
-  try {
-    const savedStudent = localStorage.getItem('mma_student');
-    const savedRole    = localStorage.getItem('mma_role');
-    if (savedStudent && savedRole === 'student') {
-      student = JSON.parse(savedStudent);
-      if (student.studentId) {
-        // Re-validate with backend then resume
-        doStudentLogin(student.studentId, student.enrollCode);
-      }
-    }
-  } catch(e) {}
+  student = {
+    name: 'Student',
+    lastName: '',
+    studentId: 'guest_' + Date.now(),
+    teacherName: '',
+    teacherEmail: '',
+    classPeriod: '',
+    enrollCode: 'guest'
+  };
+  session = {
+    score:0, total:0, correct:0, streak:0,
+    level:1, currentTopic:8, probIndex:0,
+    topicScores:{}, hintsUsed:0, wrongAnswers:[],
+    masteryWindows:{}, masteredTypes:{}
+  };
+  initSeed(student.studentId);
+  updateHeaderScore();
+  showScreen('screen-practice');
+  loadTopic(8);
 });
 
 // ═══════════════════════════════════════════
@@ -2389,7 +2397,7 @@ function showScreen(id) {
 // TOPIC LOADING
 // ═══════════════════════════════════════════
 function loadTopic(idx) {
-  if (!student.name) { showScreen('screen-welcome'); return; }
+  session.currentTopic = idx;
   session.currentTopic = idx;
   session.probIndex = 0;
   _queue = [];
