@@ -754,7 +754,7 @@ h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
     <div class="screen active" id="screen-welcome">
       <div class="welcome-hero">
         <h1>Welcome to Math Mastery Academy</h1>
-        <p>Adaptive TSIA2 practice — sign in with your school email to begin your royal journey</p>
+        <p>Adaptive TSIA2 practice — enter your details to begin your royal journey</p>
 
         <!-- Role Tabs -->
         <div style="display:flex;gap:8px;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap;">
@@ -777,17 +777,17 @@ h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
             </div>
             <div class="form-row">
               <div class="input-group">
-                <label>School Email <span style="color:#E74C3C;">*</span></label>
-                <input type="email" id="loginStudentEmail" placeholder="you@student.ccisd.us" />
-              </div>
-              <div class="input-group">
                 <label>Student ID <span style="color:#E74C3C;">*</span></label>
                 <input type="text" id="loginStudentId" placeholder="e.g. 123456" />
+              </div>
+              <div class="input-group">
+                <label>Teacher Name <span style="color:#E74C3C;">*</span></label>
+                <input type="text" id="loginTeacherName" placeholder="e.g. Ms. Johnson" />
               </div>
             </div>
             <div id="loginError" class="form-error"></div>
             <button class="btn-gold" onclick="loginStudent()">Begin My Journey →</button>
-            <p style="color:rgba(255,255,255,0.35);font-size:0.72rem;margin-top:0.6rem;">Use your school email and student ID. No password needed!</p>
+            <p style="color:rgba(255,255,255,0.35);font-size:0.72rem;margin-top:0.6rem;">Your progress is saved on this device automatically.</p>
           </div>
         </div>
 
@@ -796,17 +796,27 @@ h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
           <div class="welcome-form">
             <div class="form-row">
               <div class="input-group">
-                <label>School Email <span style="color:#E74C3C;">*</span></label>
-                <input type="email" id="loginTeacherEmail" placeholder="you@ccisd.us" />
+                <label>First Name <span style="color:#E74C3C;">*</span></label>
+                <input type="text" id="loginTFirstName" placeholder="e.g. Maria" />
               </div>
               <div class="input-group">
-                <label>Teacher Code or Admin Code <span style="color:#E74C3C;">*</span></label>
-                <input type="password" id="loginTeacherPass" placeholder="Enter your code" />
+                <label>Last Name <span style="color:#E74C3C;">*</span></label>
+                <input type="text" id="loginTLastName" placeholder="e.g. Haley" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="input-group">
+                <label>Teacher ID <span style="color:#E74C3C;">*</span></label>
+                <input type="text" id="loginTeacherId" placeholder="e.g. T12345" />
+              </div>
+              <div class="input-group">
+                <label>Admin Code (optional)</label>
+                <input type="password" id="loginAdminCode" placeholder="Leave blank if not admin" />
               </div>
             </div>
             <div id="teacherLoginError" class="form-error"></div>
             <button class="btn-gold" onclick="loginTeacher()">Sign In →</button>
-            <p style="color:rgba(255,255,255,0.35);font-size:0.72rem;margin-top:0.6rem;">Teachers: use the code assigned to you. Admin: use your admin code.</p>
+            <p style="color:rgba(255,255,255,0.35);font-size:0.72rem;margin-top:0.6rem;">Teachers enter your ID to view your dashboard. Admin code gives full access.</p>
           </div>
         </div>
 
@@ -2049,46 +2059,49 @@ async function registerStudent() {
 // STUDENT LOGIN
 // ═══════════════════════════════════════════
 async function loginStudent() {
-  const firstName = document.getElementById('loginFirstName').value.trim();
-  const lastName  = document.getElementById('loginLastName').value.trim();
-  const email     = document.getElementById('loginStudentEmail').value.trim();
-  const sid       = document.getElementById('loginStudentId').value.trim();
+  const firstName   = document.getElementById('loginFirstName').value.trim();
+  const lastName    = document.getElementById('loginLastName').value.trim();
+  const sid         = document.getElementById('loginStudentId').value.trim();
+  const teacherName = document.getElementById('loginTeacherName').value.trim();
 
-  if (!firstName||!lastName||!email||!sid) {
-    showError('loginError','Please fill in all fields.');
-    return;
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showError('loginError','Please enter a valid school email address.');
+  if (!firstName || !lastName || !sid || !teacherName) {
+    showError('loginError', 'Please fill in all fields.');
     return;
   }
 
-  // Default test account — works offline
-  if (sid === '000000' && email.toLowerCase().includes('dehaley')) {
-    student = { name:'Test', lastName:'Test', studentId:'000000', classPeriod:'ADMIN001',
-                teacherName:'Admin', teacherEmail:'dehaley@ccisd.us', enrollCode:'ADMIN001' };
-    startStudentSession();
-    return;
-  }
+  showError('loginError', '');
 
-  showError('loginError','');
-  const btn = document.querySelector('#panel-student .btn-gold');
-  btn.textContent = 'Signing in…'; btn.disabled = true;
+  student = {
+    name:        firstName,
+    lastName:    lastName,
+    studentId:   sid,
+    teacherName: teacherName,
+    teacherEmail: '',
+    classPeriod:  teacherName,
+    enrollCode:   sid
+  };
 
-  // Register or login automatically — no separate registration needed
-  const res = await callBackend('autoLogin', { firstName, lastName, studentId:sid, email });
-
-  btn.textContent = 'Begin My Journey →'; btn.disabled = false;
-
-  if (res.success) {
-    student = res.student;
-    if (res.sessionData) {
-      try { const s = JSON.parse(res.sessionData); if (s && s.score !== undefined) session = { ...session, ...s }; } catch(e){}
+  // Try to load saved progress from Google Sheets in background
+  // Fall through immediately so student is never blocked
+  callBackend('getProgress', { studentId: sid }).then(res => {
+    if (res.success && res.sessionData) {
+      try {
+        const s = JSON.parse(res.sessionData);
+        if (s && s.score !== undefined) {
+          session.score        = s.score        || 0;
+          session.level        = s.level        || 1;
+          session.correct      = s.correct      || 0;
+          session.total        = s.total        || 0;
+          session.hintsUsed    = s.hintsUsed    || 0;
+          session.topicScores  = s.topicScores  || {};
+          session.wrongAnswers = s.wrongAnswers || [];
+          updateHeaderScore();
+        }
+      } catch(e) {}
     }
-    startStudentSession();
-  } else {
-    showError('loginError', res.error || 'Sign in failed. Please check your details and try again.');
-  }
+  }).catch(() => {});
+
+  startStudentSession();
 }
 
 async function doStudentLogin(sid, code) {
@@ -2125,39 +2138,38 @@ function startStudentSession() {
 // TEACHER / ADMIN LOGIN
 // ═══════════════════════════════════════════
 async function loginTeacher() {
-  const email = document.getElementById('loginTeacherEmail').value.trim();
-  const pass  = document.getElementById('loginTeacherPass').value.trim();
-  const errEl = 'teacherLoginError';
-  if (!email||!pass) { showError(errEl,'Please enter your email and password.'); return; }
+  const firstName = document.getElementById('loginTFirstName').value.trim();
+  const lastName  = document.getElementById('loginTLastName').value.trim();
+  const tid       = document.getElementById('loginTeacherId').value.trim();
+  const adminCode = document.getElementById('loginAdminCode').value.trim();
+  const errEl     = 'teacherLoginError';
 
-  // Admin override check
-  if (pass === ADMIN_CODE) {
+  if (!firstName || !lastName || !tid) {
+    showError(errEl, 'Please enter your first name, last name and teacher ID.');
+    return;
+  }
+
+  showError(errEl, '');
+
+  // Check for admin override
+  if (adminCode === ADMIN_CODE) {
     currentRole = 'admin';
+    currentTeacher = { firstName, lastName, teacherId: tid, enrollCode: tid };
     document.getElementById('logoutBtn').style.display = 'block';
     showScreen('screen-admin');
     refreshAdminDashboard();
     return;
   }
 
-  showError(errEl,'');
-  const btn = document.querySelector('#panel-teacher .btn-gold');
-  btn.textContent = 'Signing in…'; btn.disabled = true;
-
-  const res = await callBackend('loginTeacher', { email, password:pass });
-  btn.textContent = 'Teacher Sign In →'; btn.disabled = false;
-
-  if (res.success) {
-    currentTeacher = res.teacher;
-    currentRole = 'teacher';
-    document.getElementById('logoutBtn').style.display = 'block';
-    showScreen('screen-teacher');
-    document.getElementById('teacherDashTitle').textContent = `Welcome, ${currentTeacher.firstName}!`;
-    document.getElementById('teacherEnrollCodeBox').textContent = '🔑 Enrollment Code: ' + currentTeacher.enrollCode;
-    document.getElementById('teacherEnrollDisplay').textContent = `Your students use code: ${currentTeacher.enrollCode}`;
-    refreshTeacherDashboard();
-  } else {
-    showError(errEl, res.error || 'Login failed. Check your email and password.');
-  }
+  // Regular teacher login
+  currentTeacher = { firstName, lastName, teacherId: tid, enrollCode: tid };
+  currentRole = 'teacher';
+  document.getElementById('logoutBtn').style.display = 'block';
+  document.getElementById('teacherDashTitle').textContent = `Welcome, ${firstName}!`;
+  document.getElementById('teacherEnrollCodeBox').textContent = '🔑 Teacher ID: ' + tid;
+  document.getElementById('teacherEnrollDisplay').textContent = `Students should enter your name: ${firstName} ${lastName}`;
+  showScreen('screen-teacher');
+  refreshTeacherDashboard();
 }
 
 // ═══════════════════════════════════════════
@@ -2166,8 +2178,9 @@ async function loginTeacher() {
 async function refreshTeacherDashboard() {
   const el = document.getElementById('teacherDashContent');
   el.innerHTML = '<div class="loading-msg">Loading student data…</div>';
-  const res = await callBackend('getTeacherStudents', { enrollCode: currentTeacher.enrollCode });
-  if (!res.success) { el.innerHTML = `<div class="loading-msg">Error: ${res.error}</div>`; return; }
+  const teacherName = currentTeacher.firstName + ' ' + currentTeacher.lastName;
+  const res = await callBackend('getTeacherStudents', { teacherName });
+  if (!res.success) { el.innerHTML = `<div class="loading-msg">Error loading data. Check your connection.</div>`; return; }
   renderTeacherDashboard(res.students);
 }
 
@@ -2295,19 +2308,21 @@ function saveLocalSession() {
 }
 
 function saveProgressToBackend() {
-  if (!student.studentId || student.studentId === '000000') return;
+  if (!student.studentId) return;
   const data = {
-    studentId: student.studentId,
-    enrollCode: student.enrollCode,
-    score: session.score,
-    level: session.level,
-    correct: session.correct,
-    total: session.total,
-    hintsUsed: session.hintsUsed,
-    topicScores: JSON.stringify(session.topicScores),
+    studentId:    student.studentId,
+    teacherName:  student.teacherName  || '',
+    firstName:    student.name         || '',
+    lastName:     student.lastName     || '',
+    score:        session.score,
+    level:        session.level,
+    correct:      session.correct,
+    total:        session.total,
+    hintsUsed:    session.hintsUsed,
+    topicScores:  JSON.stringify(session.topicScores),
     wrongAnswers: JSON.stringify(session.wrongAnswers.slice(-20))
   };
-  postBackend('saveProgress', data).catch(()=>{});
+  callBackend('saveProgress', data).catch(()=>{});
 }
 
 // Auto-save progress every 5 answers
